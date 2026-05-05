@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习区 - 中级会计师学习网</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .subject-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .subject-tab {
+            padding: 10px 24px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .subject-tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .subject-tab:hover:not(.active) {
+            border-color: var(--primary);
+        }
+
+        .chapter-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .chapter-link {
+            display: block;
+            padding: 16px 20px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .chapter-link:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        .chapter-link.read {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .chapter-link.read::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .chapter-num {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .chapter-name {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .content-iframe {
+            width: 100%;
+            min-height: 600px;
+            border: none;
+            border-radius: 16px;
+        }
+
+        .reading-view {
+            display: none;
+        }
+
+        .reading-view.active {
+            display: block;
+        }
+
+        .back-btn {
+            margin-bottom: 16px;
+        }
+
+        .chapter-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .chapter-content h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .chapter-content h3 {
+            font-size: 18px;
+            margin: 24px 0 12px;
+            color: var(--primary-dark);
+        }
+
+        .chapter-content p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .chapter-content ul, .chapter-content ol {
+            margin: 12px 0 12px 24px;
+        }
+
+        .chapter-content li {
+            margin-bottom: 6px;
+        }
+
+        .chapter-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .chapter-content th, .chapter-content td {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .chapter-content th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">📚 中级会计学习网</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="chapters.html" class="active">学习区</a></li>
+                <li><a href="questions.html">题库区</a></li>
+                <li><a href="plan.html">学习计划</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- 目录视图 -->
+        <div id="catalogView">
+            <div class="page-header">
+                <h1>📖 学习区</h1>
+                <p>选择科目和章节，直接在线阅读教材内容</p>
+            </div>
+
+            <div class="subject-tabs">
+                <div class="subject-tab active" onclick="switchSubject('shiwu')">中级会计实务</div>
+                <div class="subject-tab" onclick="switchSubject('caiwu')">财务管理</div>
+                <div class="subject-tab" onclick="switchSubject('jingji')">经济法</div>
+            </div>
+
+            <div id="shiwuChapters" class="chapter-list">
+                <!-- 中级会计实务 25章 -->
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 1, '总论'); return false;">
+                    <div class="chapter-num">第一章</div>
+                    <div class="chapter-name">总论</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 2, '存货'); return false;">
+                    <div class="chapter-num">第二章</div>
+                    <div class="chapter-name">存货</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 3, '固定资产'); return false;">
+                    <div class="chapter-num">第三章</div>
+                    <div class="chapter-name">固定资产</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 4, '无形资产'); return false;">
+                    <div class="chapter-num">第四章</div>
+                    <div class="chapter-name">无形资产</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 5, '投资性房地产'); return false;">
+                    <div class="chapter-num">第五章</div>
+                    <div class="chapter-name">投资性房地产</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 6, '长期股权投资和合营安排'); return false;">
+                    <div class="chapter-num">第六章</div>
+                    <div class="chapter-name">长期股权投资和合营安排</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 7, '资产减值'); return false;">
+                    <div class="chapter-num">第七章</div>
+                    <div class="chapter-name">资产减值</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 8, '金融资产和金融负债'); return false;">
+                    <div class="chapter-num">第八章</div>
+                    <div class="chapter-name">金融资产和金融负债</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 9, '职工薪酬'); return false;">
+                    <div class="chapter-num">第九章</div>
+                    <div class="chapter-name">职工薪酬</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 10, '股份支付'); return false;">
+                    <div class="chapter-num">第十章</div>
+                    <div class="chapter-name">股份支付</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 11, '借款费用'); return false;">
+                    <div class="chapter-num">第十一章</div>
+                    <div class="chapter-name">借款费用</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 12, '或有事项'); return false;">
+                    <div class="chapter-num">第十二章</div>
+                    <div class="chapter-name">或有事项</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 13, '收入'); return false;">
+                    <div class="chapter-num">第十三章</div>
+                    <div class="chapter-name">收入</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 14, '政府补助'); return false;">
+                    <div class="chapter-num">第十四章</div>
+                    <div class="chapter-name">政府补助</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 15, '非货币性资产交换'); return false;">
+                    <div class="chapter-num">第十五章</div>
+                    <div class="chapter-name">非货币性资产交换</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 16, '债务重组'); return false;">
+                    <div class="chapter-num">第十六章</div>
+                    <div class="chapter-name">债务重组</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 17, '所得税'); return false;">
+                    <div class="chapter-num">第十七章</div>
+                    <div class="chapter-name">所得税</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 18, '外币折算'); return false;">
+                    <div class="chapter-num">第十八章</div>
+                    <div class="chapter-name">外币折算</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 19, '租赁'); return false;">
+                    <div class="chapter-num">第十九章</div>
+                    <div class="chapter-name">租赁</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 20, '持有待售的非流动资产、处置组和终止经营'); return false;">
+                    <div class="chapter-num">第二十章</div>
+                    <div class="chapter-name">持有待售的非流动资产、处置组和终止经营</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 21, '企业合并和合并财务报表'); return false;">
+                    <div class="chapter-num">第二十一章</div>
+                    <div class="chapter-name">企业合并和合并财务报表</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 22, '会计政策、会计估计变更和差错更正'); return false;">
+                    <div class="chapter-num">第二十二章</div>
+                    <div class="chapter-name">会计政策、会计估计变更和差错更正</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 23, '资产负债表日后事项'); return false;">
+                    <div class="chapter-num">第二十三章</div>
+                    <div class="chapter-name">资产负债表日后事项</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 24, '政府会计'); return false;">
+                    <div class="chapter-num">第二十四章</div>
+                    <div class="chapter-name">政府会计</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('shiwu', 25, '民间非营利组织会计'); return false;">
+                    <div class="chapter-num">第二十五章</div>
+                    <div class="chapter-name">民间非营利组织会计</div>
+                </a>
+            </div>
+
+            <div id="caiwuChapters" class="chapter-list" style="display:none;">
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 1, '总论'); return false;">
+                    <div class="chapter-num">第一章</div>
+                    <div class="chapter-name">总论</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 2, '财务管理基础'); return false;">
+                    <div class="chapter-num">第二章</div>
+                    <div class="chapter-name">财务管理基础</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 3, '预算管理'); return false;">
+                    <div class="chapter-num">第三章</div>
+                    <div class="chapter-name">预算管理</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 4, '筹资管理（上）'); return false;">
+                    <div class="chapter-num">第四章</div>
+                    <div class="chapter-name">筹资管理（上）</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 5, '筹资管理（下）'); return false;">
+                    <div class="chapter-num">第五章</div>
+                    <div class="chapter-name">筹资管理（下）</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 6, '投资管理'); return false;">
+                    <div class="chapter-num">第六章</div>
+                    <div class="chapter-name">投资管理</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 7, '营运资金管理'); return false;">
+                    <div class="chapter-num">第七章</div>
+                    <div class="chapter-name">营运资金管理</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 8, '成本管理'); return false;">
+                    <div class="chapter-num">第八章</div>
+                    <div class="chapter-name">成本管理</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 9, '收入与分配管理'); return false;">
+                    <div class="chapter-num">第九章</div>
+                    <div class="chapter-name">收入与分配管理</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('caiwu', 10, '财务分析与评价'); return false;">
+                    <div class="chapter-num">第十章</div>
+                    <div class="chapter-name">财务分析与评价</div>
+                </a>
+            </div>
+
+            <div id="jingjiChapters" class="chapter-list" style="display:none;">
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 1, '总论'); return false;">
+                    <div class="chapter-num">第一章</div>
+                    <div class="chapter-name">总论</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 2, '公司法律制度'); return false;">
+                    <div class="chapter-num">第二章</div>
+                    <div class="chapter-name">公司法律制度</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 3, '合伙企业法律制度'); return false;">
+                    <div class="chapter-num">第三章</div>
+                    <div class="chapter-name">合伙企业法律制度</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 4, '物权法律制度'); return false;">
+                    <div class="chapter-num">第四章</div>
+                    <div class="chapter-name">物权法律制度</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 5, '合同法律制度'); return false;">
+                    <div class="chapter-num">第五章</div>
+                    <div class="chapter-name">合同法律制度</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 6, '金融法律制度'); return false;">
+                    <div class="chapter-num">第六章</div>
+                    <div class="chapter-name">金融法律制度</div>
+                </a>
+                <a href="#" class="chapter-link" onclick="readChapter('jingji', 7, '财政法律制度'); return false;">
+                    <div class="chapter-num">第七章</div>
+                    <div class="chapter-name">财政法律制度</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 阅读视图 -->
+        <div id="readingView" class="reading-view">
+            <button class="btn btn-secondary back-btn" onclick="backToCatalog()">← 返回目录</button>
+            <div class="page-header">
+                <h1 id="readingTitle">章节标题</h1>
+                <p id="readingSubtitle">中级会计实务</p>
+            </div>
+            <div class="chapter-content" id="chapterContent">
+                <!-- 内容将动态加载 -->
+                <div style="text-align: center; padding: 60px; color: var(--text-light);">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                    <p>此章节内容需要你从Word文档中复制粘贴到这里</p>
+                    <p style="margin-top: 12px; font-size: 14px;">
+                        操作步骤：<br>
+                        1. 打开你的Word文档<br>
+                        2. 选中本章内容，复制（Ctrl+C）<br>
+                        3. 编辑 chapters/科目_章节号.html 文件<br>
+                        4. 粘贴内容到对应位置
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        let currentSubject = 'shiwu';
+
+        function switchSubject(subject) {
+            currentSubject = subject;
+            document.querySelectorAll('.subject-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('shiwuChapters').style.display = subject === 'shiwu' ? 'grid' : 'none';
+            document.getElementById('caiwuChapters').style.display = subject === 'caiwu' ? 'grid' : 'none';
+            document.getElementById('jingjiChapters').style.display = subject === 'jingji' ? 'grid' : 'none';
+
+            updateReadStatus();
+        }
+
+        function readChapter(subject, num, name) {
+            const subjectNames = {shiwu: '中级会计实务', caiwu: '财务管理', jingji: '经济法'};
+            document.getElementById('readingTitle').textContent = `第${num}章 ${name}`;
+            document.getElementById('readingSubtitle').textContent = subjectNames[subject];
+
+            // 尝试加载对应章节文件
+            const fileName = `chapters/${subject}_${num}.html`;
+            fetch(fileName)
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('文件不存在');
+                    }
+                })
+                .then(html => {
+                    document.getElementById('chapterContent').innerHTML = html;
+                })
+                .catch(() => {
+                    // 显示占位内容
+                    document.getElementById('chapterContent').innerHTML = `
+                        <div style="text-align: center; padding: 60px; color: var(--text-light);">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                            <h3>第${num}章 ${name}</h3>
+                            <p style="margin-top: 16px;">此章节内容需要你从Word文档中导入</p>
+                            <div style="margin-top: 24px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; background: var(--bg); padding: 20px; border-radius: 12px;">
+                                <p style="font-weight: 600; margin-bottom: 12px;">📋 导入步骤：</p>
+                                <ol style="margin-left: 20px; line-height: 2;">
+                                    <li>打开你的Word文档，找到本章内容</li>
+                                    <li>全选复制（Ctrl+A → Ctrl+C）</li>
+                                    <li>在网站文件夹中创建文件：<br><code style="background: #e0e7ff; padding: 2px 6px; border-radius: 4px;">chapters/${subject}_${num}.html</code></li>
+                                    <li>粘贴内容，用 &lt;p&gt;、&lt;h3&gt; 等标签包裹</li>
+                                    <li>刷新页面即可看到内容</li>
+                                </ol>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            // 标记为已读
+            const readChapters = Storage.getArray('read_chapters');
+            const chapterId = `${subject}_${num}`;
+            if (!readChapters.includes(chapterId)) {
+                readChapters.push(chapterId);
+                Storage.setArray('read_chapters', readChapters);
+            }
+
+            document.getElementById('catalogView').style.display = 'none';
+            document.getElementById('readingView').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function backToCatalog() {
+            document.getElementById('catalogView').style.display = 'block';
+            document.getElementById('readingView').classList.remove('active');
+            updateReadStatus();
+        }
+
+        function updateReadStatus() {
+            const readChapters = Storage.getArray('read_chapters');
+            document.querySelectorAll('.chapter-link').forEach(link => {
+                const onclick = link.getAttribute('onclick');
+                const match = onclick.match(/readChapter\('(\w+)',\s*(\d+)/);
+                if (match) {
+                    const id = `${match[1]}_${match[2]}`;
+                    if (readChapters.includes(id)) {
+                        link.classList.add('read');
+                    }
+                }
+            });
+        }
+
+        // 初始化
+        updateReadStatus();
+    </script>
+</body>
+</html>

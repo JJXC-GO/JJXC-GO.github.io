@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习计划 - 中级会计师学习网</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .date-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .date-btn {
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .date-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .date-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .date-btn.has-plan {
+            border-color: var(--warning);
+        }
+
+        .date-btn.completed {
+            border-color: var(--success);
+        }
+
+        .plan-editor {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .plan-input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .plan-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .plan-input:focus {
+            border-color: var(--primary);
+        }
+
+        .plan-list {
+            margin-top: 16px;
+        }
+
+        .plan-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .plan-item.completed {
+            opacity: 0.6;
+        }
+
+        .plan-item.completed .plan-text {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .plan-checkbox {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .plan-text {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .plan-delete {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .plan-delete:hover {
+            opacity: 1;
+        }
+
+        .progress-table-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .progress-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .progress-table th,
+        .progress-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .progress-table th {
+            background: var(--bg);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .progress-table tr:hover {
+            background: var(--bg);
+        }
+
+        .progress-cell {
+            min-width: 200px;
+        }
+
+        .progress-track {
+            background: var(--border);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-done {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-partial {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-none {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 200px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, var(--primary), var(--primary-dark));
+            border-radius: 6px 6px 0 0;
+            min-height: 4px;
+            transition: height 0.5s ease;
+            position: relative;
+        }
+
+        .bar-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 500;
+        }
+
+        .comparison-table .planned {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .comparison-table .actual {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .comparison-table .gap {
+            color: var(--danger);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">📚 中级会计学习网</div>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="chapters.html">学习区</a></li>
+                <li><a href="questions.html">题库区</a></li>
+                <li><a href="plan.html" class="active">学习计划</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📅 学习计划</h1>
+            <p>制定每日学习目标，追踪实际完成情况</p>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">本周计划天数</div>
+                <div class="summary-value" id="weekPlanDays">0</div>
+                <div class="summary-label">天</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">已完成天数</div>
+                <div class="summary-value" id="weekDoneDays">0</div>
+                <div class="summary-label">天</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">总计划任务</div>
+                <div class="summary-value" id="totalTasks">0</div>
+                <div class="summary-label">个</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">完成率</div>
+                <div class="summary-value" id="completionRate">0%</div>
+                <div class="summary-label">进度良好</div>
+            </div>
+        </div>
+
+        <!-- 日期选择 -->
+        <div class="card">
+            <div class="card-title">📆 选择日期</div>
+            <div class="date-nav" id="dateNav"></div>
+        </div>
+
+        <!-- 今日计划编辑 -->
+        <div class="plan-editor" id="planEditor">
+            <div class="card-title" id="planEditorTitle">📋 今日学习计划</div>
+            <div class="plan-input-group">
+                <input type="text" class="plan-input" id="planInput" 
+                       placeholder="输入学习任务，例如：学习第3章固定资产" 
+                       onkeypress="if(event.key==='Enter') addPlan()">
+                <select class="filter-select" id="planSubject" style="width: 120px;">
+                    <option value="shiwu">实务</option>
+                    <option value="caiwu">财管</option>
+                    <option value="jingji">经济法</option>
+                </select>
+                <button class="btn btn-primary" onclick="addPlan()">➕ 添加</button>
+            </div>
+            <div class="plan-list" id="planList">
+                <p style="color: var(--text-light); text-align: center; padding: 20px;">
+                    暂无计划，添加你的第一个学习任务吧！
+                </p>
+            </div>
+        </div>
+
+        <!-- 学习进度对比表 -->
+        <div class="progress-table-container">
+            <div class="card-title">📊 学习进度对比表（近7天）</div>
+            <table class="progress-table comparison-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>计划任务数</th>
+                        <th>实际完成数</th>
+                        <th>完成率</th>
+                        <th>状态</th>
+                        <th>进度条</th>
+                    </tr>
+                </thead>
+                <tbody id="comparisonTable"></tbody>
+            </table>
+        </div>
+
+        <!-- 可视化图表 -->
+        <div class="chart-container">
+            <div class="card-title">📈 计划 vs 实际完成对比图</div>
+            <div class="bar-chart" id="barChart"></div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script>
+        let currentDate = new Date().toISOString().split('T')[0];
+        let weekDates = [];
+
+        // ==================== 日期导航 ====================
+        function generateDateNav() {
+            const nav = document.getElementById('dateNav');
+            nav.innerHTML = '';
+            weekDates = [];
+
+            for (let i = -3; i <= 3; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayName = ['日','一','二','三','四','五','六'][date.getDay()];
+                const isToday = i === 0;
+
+                weekDates.push(dateStr);
+
+                const btn = document.createElement('button');
+                btn.className = 'date-btn';
+                if (dateStr === currentDate) btn.classList.add('active');
+
+                // 检查是否有计划
+                const plans = getPlans(dateStr);
+                if (plans.length > 0) {
+                    const allDone = plans.every(p => p.completed);
+                    btn.classList.add(allDone ? 'completed' : 'has-plan');
+                }
+
+                btn.innerHTML = `
+                    <div style="font-size: 12px; opacity: 0.8;">${isToday ? '今天' : dayName}</div>
+                    <div style="font-size: 16px; font-weight: 700;">${date.getDate()}</div>
+                `;
+                btn.onclick = () => selectDate(dateStr);
+                nav.appendChild(btn);
+            }
+        }
+
+        function selectDate(date) {
+            currentDate = date;
+            generateDateNav();
+            renderPlanList();
+            updatePlanEditorTitle();
+        }
+
+        function updatePlanEditorTitle() {
+            const date = new Date(currentDate);
+            const isToday = currentDate === new Date().toISOString().split('T')[0];
+            const title = isToday ? '📋 今日学习计划' : `📋 ${date.getMonth()+1}月${date.getDate()}日学习计划`;
+            document.getElementById('planEditorTitle').textContent = title;
+        }
+
+        // ==================== 计划管理 ====================
+        function getPlans(date) {
+            const allPlans = Storage.get('study_plans');
+            return allPlans[date] || [];
+        }
+
+        function savePlans(date, plans) {
+            const allPlans = Storage.get('study_plans');
+            allPlans[date] = plans;
+            Storage.set('study_plans', allPlans);
+        }
+
+        function addPlan() {
+            const input = document.getElementById('planInput');
+            const subject = document.getElementById('planSubject').value;
+            const text = input.value.trim();
+
+            if (!text) {
+                alert('请输入学习内容');
+                return;
+            }
+
+            const plans = getPlans(currentDate);
+            const subjectNames = {shiwu: '【实务】', caiwu: '【财管】', jingji: '【经济法】'};
+
+            plans.push({
+                id: Date.now(),
+                text: subjectNames[subject] + ' ' + text,
+                completed: false,
+                createdAt: new Date().toLocaleString()
+            });
+
+            savePlans(currentDate, plans);
+            input.value = '';
+            renderPlanList();
+            generateDateNav();
+            updateSummary();
+            renderComparisonTable();
+            renderChart();
+        }
+
+        function togglePlan(planId) {
+            const plans = getPlans(currentDate);
+            const plan = plans.find(p => p.id === planId);
+            if (plan) {
+                plan.completed = !plan.completed;
+                savePlans(currentDate, plans);
+                renderPlanList();
+                generateDateNav();
+                updateSummary();
+                renderComparisonTable();
+                renderChart();
+            }
+        }
+
+        function deletePlan(planId) {
+            if (!confirm('确定删除这个学习计划吗？')) return;
+            const plans = getPlans(currentDate).filter(p => p.id !== planId);
+            savePlans(currentDate, plans);
+            renderPlanList();
+            generateDateNav();
+            updateSummary();
+            renderComparisonTable();
+            renderChart();
+        }
+
+        function renderPlanList() {
+            const list = document.getElementById('planList');
+            const plans = getPlans(currentDate);
+
+            if (plans.length === 0) {
+                list.innerHTML = `
+                    <p style="color: var(--text-light); text-align: center; padding: 20px;">
+                        暂无计划，添加你的第一个学习任务吧！
+                    </p>
+                `;
+                return;
+            }
+
+            list.innerHTML = plans.map(plan => `
+                <div class="plan-item ${plan.completed ? 'completed' : ''}">
+                    <input type="checkbox" class="plan-checkbox" 
+                           ${plan.completed ? 'checked' : ''} 
+                           onchange="togglePlan(${plan.id})">
+                    <span class="plan-text">${plan.text}</span>
+                    <button class="plan-delete" onclick="deletePlan(${plan.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        // ==================== 统计与对比表 ====================
+        function updateSummary() {
+            let totalPlanDays = 0;
+            let doneDays = 0;
+            let totalTasks = 0;
+            let completedTasks = 0;
+
+            weekDates.forEach(date => {
+                const plans = getPlans(date);
+                if (plans.length > 0) {
+                    totalPlanDays++;
+                    totalTasks += plans.length;
+                    const done = plans.filter(p => p.completed).length;
+                    completedTasks += done;
+                    if (done === plans.length) doneDays++;
+                }
+            });
+
+            document.getElementById('weekPlanDays').textContent = totalPlanDays;
+            document.getElementById('weekDoneDays').textContent = doneDays;
+            document.getElementById('totalTasks').textContent = totalTasks;
+            document.getElementById('completionRate').textContent = 
+                totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) + '%' : '0%';
+        }
+
+        function renderComparisonTable() {
+            const tbody = document.getElementById('comparisonTable');
+
+            tbody.innerHTML = weekDates.map(date => {
+                const plans = getPlans(date);
+                const planned = plans.length;
+                const actual = plans.filter(p => p.completed).length;
+                const rate = planned > 0 ? Math.round((actual / planned) * 100) : 0;
+
+                const d = new Date(date);
+                const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
+                const isToday = date === new Date().toISOString().split('T')[0];
+
+                let statusClass = 'status-none';
+                let statusText = '未安排';
+                if (planned > 0) {
+                    if (rate === 100) {
+                        statusClass = 'status-done';
+                        statusText = '已完成';
+                    } else if (rate > 0) {
+                        statusClass = 'status-partial';
+                        statusText = '进行中';
+                    } else {
+                        statusText = '未开始';
+                    }
+                }
+
+                return `
+                    <tr ${isToday ? 'style="background: #eef2ff;"' : ''}>
+                        <td><strong>${isToday ? '今天' : dateStr}</strong></td>
+                        <td class="planned">${planned}</td>
+                        <td class="actual">${actual}</td>
+                        <td>${rate}%</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td class="progress-cell">
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: ${rate}%"></div>
+                            </div>
+                            <div class="progress-text">${actual}/${planned}</div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ==================== 图表 ====================
+        function renderChart() {
+            const chart = document.getElementById('barChart');
+            let maxVal = 0;
+
+            const data = weekDates.map(date => {
+                const plans = getPlans(date);
+                const planned = plans.length;
+                const actual = plans.filter(p => p.completed).length;
+                maxVal = Math.max(maxVal, planned, actual);
+                return { planned, actual };
+            });
+
+            if (maxVal === 0) maxVal = 5;
+
+            chart.innerHTML = weekDates.map((date, i) => {
+                const d = new Date(date);
+                const dayName = ['日','一','二','三','四','五','六'][d.getDay()];
+                const plannedHeight = (data[i].planned / maxVal * 100) || 4;
+                const actualHeight = (data[i].actual / maxVal * 100) || 4;
+
+                return `
+                    <div class="bar-item">
+                        <div style="display: flex; gap: 4px; align-items: flex-end; height: 100%;">
+                            <div class="bar" style="height: ${plannedHeight}%; background: linear-gradient(to top, #c7d2fe, #a5b4fc);" 
+                                 title="计划: ${data[i].planned}"></div>
+                            <div class="bar" style="height: ${actualHeight}%;" 
+                                 title="完成: ${data[i].actual}"></div>
+                        </div>
+                        <div class="bar-label">${dayName}<br><small>${d.getMonth()+1}/${d.getDate()}</small></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==================== 初始化 ====================
+        function init() {
+            generateDateNav();
+            renderPlanList();
+            updatePlanEditorTitle();
+            updateSummary();
+            renderComparisonTable();
+            renderChart();
+        }
+
+        init();
+    </script>
+</body>
+</html>
